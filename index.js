@@ -1,63 +1,247 @@
-
-
+const inputTextLimit = 18;
 
 const inputText = document.querySelector(".screen .input");
 const resultText = document.querySelector(".screen .result");
 const acButton = document.querySelector(".buttons-div #ac");
 const delButton = document.querySelector(".buttons-div #del");
 const numberButtons = document.querySelectorAll(".buttons-div .number");
-
-inputText.textContent = "";
+const operatorButtons = document.querySelectorAll(".buttons-div .operator")
+const equalButton = document.querySelector(".buttons-div #equal");
+const pointButton = document.querySelector(".buttons-div #point");
 
 acButton.addEventListener("click", acFunction);
 delButton.addEventListener("click", delFunction);
 numberButtons.forEach(button => button.addEventListener("click", numberFunction));
+operatorButtons	.forEach(button => button.addEventListener("click", operatorFunction));
+equalButton.addEventListener("click", equalFunction);
+pointButton.addEventListener("click", pointFunction);
 
+var firstOperand;
+var operator;
+var secondOperand;
+var result;
+
+var inputTextString;
+var inFirstOperand;
+var firstOperandHasNumber;
+var secondOperandHasNumber;
+var resultIsEmpty;
+
+// To run at the start
+reset();
+
+
+function reset() {
+	inputTextString = "";
+	firstOperand = "";
+	operator = "";
+	secondOperand = "";
+	result = 0;
+
+	inFirstOperand = true;
+	firstOperandHasNumber = false;
+	secondOperandHasNumber = false;
+	resultIsEmpty = true;
+}
 
 function acFunction() {
+	
 	inputText.textContent = "";
 	resultText.textContent = "";
+
+	reset();
 }
 
-function delFunction() {}
-
-
-function numberFunction(e) {
-	inputText.textContent += getNumber(e.target.getAttribute("id"));
-}
-
-function getNumber(str) {
+function delFunction() {
 	
-	switch (str) {
+	if (!resultIsEmpty) {
+		reset();
+		inputText.textContent = "";
+	}
+
+	if (inputTextString.length > 0) {
 		
-		case "one":
-			return 1;
+		// Deleting an operator
+		if (inputTextString[inputTextString.length - 1] === " ") {
+			inputTextString = inputTextString.substring(0, inputText.textContent.length - 3);
+			operator = "";
+			inFirstOperand = true;
+		}
+
+		// Deleting a number
+		else {
+			inputTextString = inputTextString.substring(0, inputText.textContent.length - 1);
 			
-		case "two":
-			return 2;
+			// Deleting a number from the second operand
+			if (!inFirstOperand) {
+				secondOperand = secondOperand.substring(0, secondOperand.length - 1);
+
+				if (secondOperand.length === 0)
+					secondOperandHasNumber = false;
+			} 
 			
-		case "three":
-			return 3;
+			// Deleting a number from the first operand
+			else {
+				firstOperand = firstOperand.substring(0, secondOperand.length - 1);
+
+				if (firstOperand.length === 0)
+					firstOperandHasNumber = false;
+			}
+		}
 			
-		case "four":
-			return 4;
-			
-		case "five":
-			return 5;
-			
-		case "six":
-			return 6;
-			
-		case "seven":
-			return 7;
-			
-		case "eight":
-			return 8;
-			
-		case "nine":
-			return 9;
-			
-		case "zero":
-			return 0;
+		inputText.textContent = inputTextString;
 	}
 }
+
+
+function numberFunction(event) {
+
+	if (!resultIsEmpty) {
+		reset();
+	}
+
+	if (inputTextString.length < 18) {
+		
+		const number = event.target.textContent;
+
+		if (inFirstOperand) {
+			firstOperand += number;
+
+			if (!firstOperandHasNumber)
+				firstOperandHasNumber = true;
+
+		} else {
+			secondOperand += number;
+
+			if (!secondOperandHasNumber)
+				secondOperandHasNumber = true;
+		}
+		
+		inputTextString += number;
+		inputText.textContent = inputTextString;
+	}
+}
+
+function operatorFunction(event) {
+
+	const sign = event.target.textContent;
+
+	// Pressing an operator button immediately after calculating
+	if (!resultIsEmpty) {
+		firstOperand = resultText.textContent;
+		operator = sign;
+		secondOperand = "";
+
+		inFirstOperand = false;
+		firstOperandHasNumber = true;
+		secondOperandHasNumber = false;
+		resultIsEmpty = true;
+
+		inputTextString = firstOperand + " " + operator + " ";
+		inputText.textContent = inputTextString;
+	}
+
+	else {
+		if (inputTextString.length < 18) {
+			if (inFirstOperand && firstOperand.length === 0 && (sign === "+" || sign === "-")) {
+				firstOperand += sign;
+				inputTextString += sign;
+				inputText.textContent = inputTextString;
+			}
+
+			if (!inFirstOperand && secondOperand.length === 0 && (sign === "+" || sign === "-")) {
+				secondOperand += sign;
+				inputTextString += sign;
+				inputText.textContent = inputTextString;
+			}
+
+			if (inFirstOperand && firstOperandHasNumber) {
+				operator = sign;
+				inFirstOperand = false;
+				inputTextString += " " + sign + " ";
+				inputText.textContent = inputTextString;
+			}
+		}
+
+		if (!inFirstOperand && secondOperandHasNumber) {
+			equalFunction();
+		}
+	}
+}
+
+function equalFunction() {
+
+	if (firstOperandHasNumber && secondOperandHasNumber) {
+		result = calculate(firstOperand, secondOperand, operator);
+
+		result = Math.round((result + Number.EPSILON) * 100) / 100
+
+		resultText.textContent = result;
+		resultIsEmpty = false;
+	}
+}
+
+function pointFunction() {
+
+	if (inputTextString.length < 18) {
+	
+		if (inFirstOperand && firstOperand.indexOf(".") === -1) {
+			firstOperand += ".";
+			inputTextString += ".";
+			inputText.textContent = inputTextString;
+		}
+		else if (!inFirstOperand && secondOperand.indexOf(".") === -1) {
+			secondOperand += ".";
+			inputTextString += ".";
+			inputText.textContent = inputTextString;
+		}
+	}
+}
+
+function calculate(first, second, operator) {
+
+	const firstNumber = Number(first);
+	const secondNumber = Number(second);
+
+	switch (operator) {
+
+		case "+":
+			return result = add(firstNumber, secondNumber);
+
+		case "-":
+			return result = subtract(firstNumber, secondNumber);
+		
+		case "×":
+			return result = multiply(firstNumber, secondNumber);
+
+		case "÷":
+			return result = divide(firstNumber, secondNumber);
+	}
+}
+
+const add = (first, second) => first + second;
+const subtract = (first, second) => first - second;
+const multiply = (first, second) => first * second;
+const divide = (first, second) => first / second;
+
+
+window.addEventListener('keydown', (event) => {
+
+	switch (event.key) {
+
+		// case "Delete":
+		case "Escape":
+			acButton.click();
+			break;
+
+		case "Backspace":
+		case "Delete":
+			delButton.click();
+			break;
+
+		case "=":
+		case "Enter":
+			equalButton.click();
+			break;
+	}	
+});
