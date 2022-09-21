@@ -225,23 +225,72 @@ const multiply = (first, second) => first * second;
 const divide = (first, second) => first / second;
 
 
+// Configuring for keyboard
+
 window.addEventListener('keydown', (event) => {
-
+    
 	switch (event.key) {
-
-		// case "Delete":
+        
+        case "Tab":
+            event.preventDefault();
+            break;
+        
 		case "Escape":
+            event.preventDefault();
 			acButton.click();
 			break;
 
 		case "Backspace":
 		case "Delete":
+            event.preventDefault();            
 			delButton.click();
 			break;
 
 		case "=":
 		case "Enter":
+            event.preventDefault();
 			equalButton.click();
+			break;
+            
+        case "." :
+            event.preventDefault();
+            pointButton.click();
+            break;
+            
+        case "+":
+        case "-":
+        case "*":
+        case "/":
+            event.preventDefault();
+			
+			const sign = event.key === "*" ? "×" : event.key === "/" ? "÷" : event.key;
+			
+			operatorButtons.forEach(button => {
+				
+				if (button.textContent === sign) {
+					button.click();
+				}
+			});
+            break;
+			
+		case "0":
+        case "1":
+        case "2":
+        case "3":
+		case "4":
+        case "5":
+        case "6":
+        case "7":
+		case "8":
+        case "9":
+			event.preventDefault();
+			
+			numberButtons.forEach(button => {
+				
+				if (button.textContent === event.key) {
+					button.click();
+				}
+			});
 			break;
 	}	
 });
