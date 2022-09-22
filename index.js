@@ -4,8 +4,8 @@ const inputText = document.querySelector(".screen .input");
 const resultText = document.querySelector(".screen .result");
 const acButton = document.querySelector(".buttons-div #ac");
 const delButton = document.querySelector(".buttons-div #del");
-const numberButtons = document.querySelectorAll(".buttons-div .number");
-const operatorButtons = document.querySelectorAll(".buttons-div .operator")
+const numberButtons = document.querySelectorAll(".buttons-div .number"); // 0, 1, 2, 3, 4, 5, 6, 7, 8, 9
+const operatorButtons = document.querySelectorAll(".buttons-div .operator") // +, -, ×, ÷
 const equalButton = document.querySelector(".buttons-div #equal");
 const pointButton = document.querySelector(".buttons-div #point");
 
@@ -16,11 +16,13 @@ operatorButtons	.forEach(button => button.addEventListener("click", operatorFunc
 equalButton.addEventListener("click", equalFunction);
 pointButton.addEventListener("click", pointFunction);
 
+// String values
 var firstOperand;
 var operator;
 var secondOperand;
 var result;
 
+// Boolean values
 var inputTextString;
 var inFirstOperand;
 var firstOperandHasNumber;
@@ -88,7 +90,8 @@ function delFunction() {
 					firstOperandHasNumber = false;
 			}
 		}
-			
+		
+		// Updating the text in the screen
 		inputText.textContent = inputTextString;
 	}
 }
@@ -103,13 +106,17 @@ function numberFunction(event) {
 		
 		const number = event.target.textContent;
 
+		// Adding to the first operand
 		if (inFirstOperand) {
 			firstOperand += number;
 
 			if (!firstOperandHasNumber)
 				firstOperandHasNumber = true;
 
-		} else {
+		} 
+		
+		// Adding to the second operand
+		else {
 			secondOperand += number;
 
 			if (!secondOperandHasNumber)
@@ -126,6 +133,7 @@ function operatorFunction(event) {
 	const sign = event.target.textContent;
 
 	// Pressing an operator button immediately after calculating
+	// Previous result becomes first operand for the new calculation
 	if (!resultIsEmpty) {
 		firstOperand = resultText.textContent;
 		operator = sign;
@@ -142,18 +150,24 @@ function operatorFunction(event) {
 
 	else {
 		if (inputTextString.length < 18) {
+
+			// Makes first operand positive or negative by letting user type + or - at the start
+			// Example +43 or -89
 			if (inFirstOperand && firstOperand.length === 0 && (sign === "+" || sign === "-")) {
 				firstOperand += sign;
 				inputTextString += sign;
 				inputText.textContent = inputTextString;
 			}
 
+			// Makes second operand positive or negative by letting user type + or - at the start
+			// Example +43 or -89
 			if (!inFirstOperand && secondOperand.length === 0 && (sign === "+" || sign === "-")) {
 				secondOperand += sign;
 				inputTextString += sign;
 				inputText.textContent = inputTextString;
 			}
 
+			// Adding the main operator of the calculation
 			if (inFirstOperand && firstOperandHasNumber) {
 				operator = sign;
 				inFirstOperand = false;
@@ -162,6 +176,7 @@ function operatorFunction(event) {
 			}
 		}
 
+		// Triggering the calculate function if an operator button and both operands have number
 		if (!inFirstOperand && secondOperandHasNumber) {
 			equalFunction();
 		}
@@ -186,12 +201,15 @@ function pointFunction() {
 		reset();
 
 	if (inputTextString.length < 18) {
-	
+		
+		// Prevents user from inserting more than one point in the first operand
 		if (inFirstOperand && firstOperand.indexOf(".") === -1) {
 			firstOperand += ".";
 			inputTextString += ".";
 			inputText.textContent = inputTextString;
 		}
+
+		// Prevents user from inserting more than one point in the first operand
 		else if (!inFirstOperand && secondOperand.indexOf(".") === -1) {
 			secondOperand += ".";
 			inputTextString += ".";
@@ -265,6 +283,8 @@ window.addEventListener('keydown', (event) => {
         case "/":
             event.preventDefault();
 			
+			// Converting the ×, ÷ to normal keyboard signs *, /
+			// So that the event.keys are recognized
 			const sign = event.key === "*" ? "×" : event.key === "/" ? "÷" : event.key;
 			
 			operatorButtons.forEach(button => {
