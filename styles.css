@@ -22,6 +22,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-wrap: wrap;
     background-color: var(--bgColor);    
 }
 
@@ -102,4 +103,19 @@ button {
 
 .button-row.top #del {
     background-color: var(--buttonCOlor2);
+}
+
+.credit {
+    width: 100%;
+}
+
+.credit p {
+    font-size: 1.6rem;
+    text-align: center;
+    color: white;
+    align-self: flex-end;
+}
+
+.credit p a {
+    color: white;
 }

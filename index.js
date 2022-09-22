@@ -96,9 +96,8 @@ function delFunction() {
 
 function numberFunction(event) {
 
-	if (!resultIsEmpty) {
+	if (!resultIsEmpty)
 		reset();
-	}
 
 	if (inputTextString.length < 18) {
 		
@@ -182,6 +181,9 @@ function equalFunction() {
 }
 
 function pointFunction() {
+
+	if (!resultIsEmpty)
+		reset();
 
 	if (inputTextString.length < 18) {
 	
