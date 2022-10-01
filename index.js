@@ -132,9 +132,39 @@ function operatorFunction(event) {
 
 	const sign = event.target.textContent;
 
-	// Pressing an operator button immediately after calculating
-	// Previous result becomes first operand for the new calculation
-	if (!resultIsEmpty) {
+	if (inputTextString.length < 18) {
+
+		// Makes first operand positive or negative by letting user type + or - at the start
+		// Example +43 or -89
+		if (inFirstOperand && firstOperand.length === 0 && (sign === "+" || sign === "-")) {
+			firstOperand += sign;
+			inputTextString += sign;
+			inputText.textContent = inputTextString;
+		}
+
+		// Makes second operand positive or negative by letting user type + or - at the start
+		// Example +43 or -89
+		if (!inFirstOperand && secondOperand.length === 0 && (sign === "+" || sign === "-")) {
+			secondOperand += sign;
+			inputTextString += sign;
+			inputText.textContent = inputTextString;
+		}
+
+		// Adding the main operator of the calculation
+		if (inFirstOperand && firstOperandHasNumber) {
+			operator = sign;
+			inFirstOperand = false;
+			inputTextString += " " + sign + " ";
+			inputText.textContent = inputTextString;
+		}
+	}
+
+	// Triggering the calculate function if an operator button and both operands have number
+	if (!inFirstOperand && secondOperandHasNumber) {
+		equalFunction();
+
+		// Pressing an operator button immediately after calculating
+		// Previous result becomes first operand for the new calculation
 		firstOperand = resultText.textContent;
 		operator = sign;
 		secondOperand = "";
@@ -146,40 +176,6 @@ function operatorFunction(event) {
 
 		inputTextString = firstOperand + " " + operator + " ";
 		inputText.textContent = inputTextString;
-	}
-
-	else {
-		if (inputTextString.length < 18) {
-
-			// Makes first operand positive or negative by letting user type + or - at the start
-			// Example +43 or -89
-			if (inFirstOperand && firstOperand.length === 0 && (sign === "+" || sign === "-")) {
-				firstOperand += sign;
-				inputTextString += sign;
-				inputText.textContent = inputTextString;
-			}
-
-			// Makes second operand positive or negative by letting user type + or - at the start
-			// Example +43 or -89
-			if (!inFirstOperand && secondOperand.length === 0 && (sign === "+" || sign === "-")) {
-				secondOperand += sign;
-				inputTextString += sign;
-				inputText.textContent = inputTextString;
-			}
-
-			// Adding the main operator of the calculation
-			if (inFirstOperand && firstOperandHasNumber) {
-				operator = sign;
-				inFirstOperand = false;
-				inputTextString += " " + sign + " ";
-				inputText.textContent = inputTextString;
-			}
-		}
-
-		// Triggering the calculate function if an operator button and both operands have number
-		if (!inFirstOperand && secondOperandHasNumber) {
-			equalFunction();
-		}
 	}
 }
 
